@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model SearchProfile {
+  id        String         @id @default(cuid())
+  name      String         @unique
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  sources   SearchSource[]
+}
+
+model SearchSource {
+  id            String         @id @default(cuid())
+  query         String
+  sourceUrl     String?
+  active        Boolean        @default(true)
+  priority      Int            @default(3)
+  dateRestrict  String?
+  notes         String?
+  lastRunAt     DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  opportunities Opportunity[]
+  reviewCandidates ReviewCandidate[]
+  profileId     String?
+  profile       SearchProfile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model TargetOrganization {
+  id            String            @id @default(cuid())
+  name          String
+  website       String            @unique
+  category      String?
+  country       String?
+  active        Boolean           @default(true)
+  priority      Int               @default(3)
+  notes         String?
+  lastScannedAt DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  reviewCandidates ReviewCandidate[]
+
+  @@index([active])
+  @@index([category])
+}
+
+model ReviewCandidate {
+  id              String              @id @default(cuid())
+  title           String
+  organization    String?
+  url             String              @unique
+  snippet         String?             @db.Text
+  rawText         String?             @db.Text
+  documentUrl     String?
+  deadline        DateTime?
+  category        String?
+  fitScore        Int                 @default(0)
+  status          String              @default("Review")
+  reason          String?
+  sourceType      String              @default("Target scan")
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  sourceId        String?
+  source          SearchSource?       @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  targetId        String?
+  target          TargetOrganization? @relation(fields: [targetId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([deadline])
+  @@index([fitScore])
+  @@index([sourceId])
+  @@index([targetId])
+}
+
+model Opportunity {
+  id               String        @id @default(cuid())
+  title            String
+  organization     String?
+  url              String        @unique
+  snippet          String?
+  rawText          String?       @db.Text
+  documentUrl      String?
+  aiSummary        String?       @db.Text
+  deadline         DateTime?
+  contactEmail     String?
+  category         String?
+  scope            String?       @db.Text
+  submissionMethod String?
+  risks            Json?
+  scoreReasons     Json?
+  fitScore         Int           @default(0)
+  recommendation   String        @default("No-bid")
+  status           String        @default("New")
+  discoveredAt     DateTime      @default(now())
+  sourceId         String?
+  source           SearchSource? @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  linkAvailable    Boolean       @default(true)
+  lastLinkCheckAt  DateTime?
+
+  @@index([fitScore, discoveredAt])
+  @@index([status])
+  @@index([deadline])
+  @@index([linkAvailable])
+}

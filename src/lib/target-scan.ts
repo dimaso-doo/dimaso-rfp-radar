@@ -118,11 +118,11 @@ async function processTargetResult(result: SearchResult, target: { id: string; n
   return review;
 }
 
-export async function runTargetScan(options: { limit?: number } = {}) {
+export async function runTargetScan(options: { limit?: number; targetIds?: string[]; scanAll?: boolean } = {}) {
   const targets = await db.targetOrganization.findMany({
-    where: { active: true },
+    where: options.targetIds?.length ? { id: { in: options.targetIds } } : { active: true },
     orderBy: [{ priority: "asc" }, { lastScannedAt: "asc" }, { updatedAt: "asc" }],
-    take: options.limit ?? 10,
+    ...(options.scanAll || options.targetIds?.length ? {} : { take: options.limit ?? 10 }),
   });
 
   let scannedResults = 0;

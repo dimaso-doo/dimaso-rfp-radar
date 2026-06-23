@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
-import { AddTargetForm, RunTargetScanButton } from "@/components/target-actions";
-import { ExternalLink } from "lucide-react";
+import { AddTargetForm, RunTargetScanButton, TargetsScanTable } from "@/components/target-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -28,20 +27,15 @@ export default async function TargetsPage() {
       <div className="card p-4"><div className="text-xs text-[#7b8781]">Review candidates</div><div className="mt-1 text-2xl font-bold">{targets.reduce((sum, target) => sum + target._count.reviewCandidates, 0)}</div></div>
     </div>
 
-    <div className="card overflow-hidden">
-      <table>
-        <thead><tr><th>Organization</th><th>RFP / vendor page</th><th>Category</th><th>Status</th><th>Review</th><th>Last scan</th><th/></tr></thead>
-        <tbody>{targets.map((target) => <tr key={target.id}>
-          <td><div className="font-semibold">{target.name}</div><a className="mt-1 inline-flex items-center gap-1 text-xs text-[#1d684e]" href={target.website} target="_blank" rel="noreferrer">{target.website}<ExternalLink size={12}/></a></td>
-          <td className="max-w-xs text-xs">{target.rfpUrl ? <a className="inline-flex items-center gap-1 text-[#1d684e]" href={target.rfpUrl} target="_blank" rel="noreferrer">{target.rfpUrl}<ExternalLink size={12}/></a> : "—"}</td>
-          <td className="text-sm">{target.category ?? "Organization"}</td>
-          <td><span className={`badge ${target.active ? "bg-[#e6f5ed] text-[#23704e]" : "bg-[#f1f3f1] text-[#68746e]"}`}>{target.active ? "Active" : "Paused"}</span></td>
-          <td className="text-sm">{target._count.reviewCandidates}</td>
-          <td className="text-sm text-[#68746e]">{target.lastScannedAt ? target.lastScannedAt.toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}</td>
-          <td></td>
-        </tr>)}</tbody>
-      </table>
-      {!targets.length && <div className="p-8 text-center text-sm text-[#748079]">No target organizations imported yet.</div>}
-    </div>
+    <TargetsScanTable targets={targets.map((target) => ({
+      id: target.id,
+      name: target.name,
+      website: target.website,
+      rfpUrl: target.rfpUrl,
+      category: target.category,
+      active: target.active,
+      lastScannedAt: target.lastScannedAt?.toISOString() ?? null,
+      reviewCount: target._count.reviewCandidates,
+    }))}/>
   </>;
 }

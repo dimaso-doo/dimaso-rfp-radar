@@ -86,6 +86,62 @@ const targets = [
     category: "Foundation",
     notes: "Public RFP page.",
   },
+  {
+    name: "Public Health Institute",
+    website: "https://www.phi.org",
+    rfpUrl: "https://www.phi.org/work-with-us/rfp-vendor-opportunities/",
+    category: "Nonprofit",
+    notes: "Public RFP & Vendor Opportunities page.",
+  },
+  {
+    name: "AVANCE",
+    website: "https://www.avance.org",
+    rfpUrl: "https://www.avance.org/contact/procurement/",
+    category: "Nonprofit",
+    notes: "Public procurement page for open RFP opportunities.",
+  },
+  {
+    name: "Association of Public Health Laboratories",
+    website: "https://aphl.org",
+    rfpUrl: "https://aphl.org/resources/for-organizations/rfp",
+    category: "Association",
+    notes: "Public requests for proposals and funding opportunities page.",
+  },
+  {
+    name: "National Forest Foundation",
+    website: "https://www.nationalforests.org",
+    rfpUrl: "https://www.nationalforests.org/requests-for-proposals/",
+    category: "Foundation",
+    notes: "Public contracting and procurement opportunities page.",
+  },
+  {
+    name: "Urban League of Broward County",
+    website: "https://www.ulbroward.org",
+    rfpUrl: "https://www.ulbroward.org/procurement",
+    category: "Nonprofit",
+    notes: "Public procurement/RFP page.",
+  },
+  {
+    name: "Mount Rogers Community Services",
+    website: "https://www.mountrogers.org",
+    rfpUrl: "https://www.mountrogers.org/procurement-opportunities/",
+    category: "Nonprofit",
+    notes: "Public procurement opportunities page.",
+  },
+  {
+    name: "Advance Central PA",
+    website: "https://advancecentralpa.org",
+    rfpUrl: "https://advancecentralpa.org/about-us/public-notices/",
+    category: "Nonprofit",
+    notes: "Public notices page with procurement/RFP contracting notices.",
+  },
+  {
+    name: "Associated Universities / NRAO",
+    website: "https://info.nrao.edu",
+    rfpUrl: "https://info.nrao.edu/oas/cap/open-rfps",
+    category: "Nonprofit research",
+    notes: "Public open RFP/RFI/sources sought page.",
+  },
 ];
 
 const db = new PrismaClient({

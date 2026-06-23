@@ -49,6 +49,7 @@ async function processTargetResult(result: SearchResult, target: { id: string; n
   if (!assessment.accepted) return null;
   const deadline = extractDeadline(completeText);
   const score = scoreOpportunity({ url: result.url, text: completeText, deadline });
+  if (score.score < 20 || score.status === "Rejected - Government") return null;
   const reason = reviewReason({ deadline, score, extractedLength: extractedText.length });
   const today = startOfToday();
   const email = completeText.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0] ?? null;
@@ -131,7 +132,7 @@ export async function runTargetScan(options: { limit?: number } = {}) {
   for (const target of targets) {
     try {
       const domain = domainFromWebsite(target.website);
-      const results = await searchTargetDomain(domain);
+      const results = await searchTargetDomain(domain, target.rfpUrl ? [target.rfpUrl] : []);
       scannedResults += results.length;
       for (const result of results) {
         const saved = await processTargetResult(result, target);

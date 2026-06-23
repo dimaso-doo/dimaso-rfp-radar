@@ -37,6 +37,7 @@ model TargetOrganization {
   id            String            @id @default(cuid())
   name          String
   website       String            @unique
+  rfpUrl        String?
   category      String?
   country       String?
   active        Boolean           @default(true)

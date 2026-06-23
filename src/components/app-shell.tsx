@@ -1,12 +1,12 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, ClipboardList, LayoutDashboard, Radar, Search, Settings, Plus, Bell, ChevronDown } from "lucide-react";
+import { Building2, ClipboardList, LayoutDashboard, Radar, Settings, Plus, Bell, ChevronDown } from "lucide-react";
 
 const links = [
   ["Dashboard", "/", LayoutDashboard], ["Opportunities", "/opportunities", Radar],
   ["Review candidates", "/review", ClipboardList], ["Target orgs", "/targets", Building2],
-  ["Search sources", "/sources", Search], ["Settings", "/settings", Settings],
+  ["Settings", "/settings", Settings],
 ] as const;
 
 export function AppShell({children,opportunityCount}:{children:React.ReactNode;opportunityCount:number}) {

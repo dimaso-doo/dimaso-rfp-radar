@@ -17,8 +17,7 @@ Demo data is used only when no database is configured. With Supabase connected, 
 - `/opportunities` and `/opportunities/[id]` — complete pipeline and score detail
 - `/sources` — default query management
 - `/opportunities/new` — public URL intake
-- `/api/cron/scan` — broad search scan with full HTML/PDF verification
-- `/api/cron/target-scan` — direct daily monitoring of target organization websites
-- `/api/cron/digest` — Resend email digest after both scans
+- `/api/cron/target-scan` — direct daily monitoring of verified US target organization RFP/vendor pages
+- `/api/cron/digest` — Resend email digest after the target-site scan
 
 The ingestion helper fetches public HTML only, identifies itself, times out slow requests, discovers linked PDF/DOC/DOCX files, and never attempts to authenticate or bypass paywalls. Production deployments should add application authentication and a fuller robots.txt policy before inviting users.

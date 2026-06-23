@@ -224,7 +224,7 @@ async function fetchDiscoveryDocument(url: string) {
   }
 }
 
-async function discoverTargetUrls(domain: string): Promise<SearchResult[]> {
+async function discoverTargetUrls(domain: string, seedUrls: string[] = []): Promise<SearchResult[]> {
   const bases = [`https://${domain}`, `http://${domain}`];
   const found = new Map<string, SearchResult>();
   const add = (url: string, title = "Potential RFP/vendor page", snippet = "") => {
@@ -234,8 +234,12 @@ async function discoverTargetUrls(domain: string): Promise<SearchResult[]> {
     } catch {}
   };
 
+  for (const seedUrl of seedUrls) add(seedUrl, "Verified RFP/vendor page", "Added from target organization watchlist");
+
   for (const base of bases) {
-    for (const path of TARGET_COMMON_PATHS) add(`${base}${path}`, `Potential RFP/vendor page: ${path}`, "Direct target-site discovery");
+    if (!seedUrls.length) {
+      for (const path of TARGET_COMMON_PATHS) add(`${base}${path}`, `Potential RFP/vendor page: ${path}`, "Direct target-site discovery");
+    }
 
     const sitemap = await fetchDiscoveryDocument(`${base}/sitemap.xml`);
     if (sitemap) {
@@ -265,14 +269,14 @@ async function discoverTargetUrls(domain: string): Promise<SearchResult[]> {
   return checks.flatMap((check) => check.status === "fulfilled" && check.value ? [check.value] : []).slice(0, 12);
 }
 
-export async function searchTargetDomain(domain: string) {
+export async function searchTargetDomain(domain: string, seedUrls: string[] = []) {
   const queries = [
     `("request for proposals" OR RFP) ("website redesign" OR "website development" OR "website maintenance" OR "web design" OR CMS OR WordPress)`,
     `("seeking proposals" OR "qualified vendors" OR "qualified firms") ("website" OR "web development" OR "web design" OR CMS)`,
     `("proposals due" OR "submission deadline" OR "must be received by") ("website" OR WordPress OR CMS OR "digital platform")`,
     `("request for proposal" OR RFP) ("ongoing website support" OR "website maintenance" OR "hosting support" OR "accessibility")`,
   ];
-  const directResults = await discoverTargetUrls(domain);
+  const directResults = await discoverTargetUrls(domain, seedUrls);
   const tavilyResults = await Promise.allSettled(queries.map((query) => tavilySearch(query, false, "y", [domain])));
   const searchResults = tavilyResults.flatMap((result) => result.status === "fulfilled" ? result.value : []);
   return [...new Map([...directResults, ...searchResults].map((result) => [result.url, result])).values()];

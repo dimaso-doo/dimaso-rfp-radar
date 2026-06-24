@@ -20,7 +20,7 @@ export function RunTargetScanButton({ limit = 25 }: { limit?: number }) {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Target scan failed");
-      setMessage(`Done: ${result.targets} targets, ${result.reviewSaved} review candidates, ${result.opportunities} opportunities.`);
+      setMessage(`Done: ${result.targets} targets, ${result.changedPages ?? 0} changed pages, ${result.reviewSaved} review candidates.`);
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Target scan failed");
@@ -115,7 +115,7 @@ export function TargetsScanTable({ targets }: { targets: TargetRow[] }) {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Target scan failed");
-      setMessage(`Done: ${result.targets} targets, ${result.scannedResults} pages, ${result.reviewSaved} review candidates.`);
+      setMessage(`Done: ${result.targets} targets, ${result.scannedResults} pages, ${result.changedPages ?? 0} changed, ${result.reviewSaved} review candidates.`);
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Target scan failed");

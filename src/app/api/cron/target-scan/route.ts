@@ -8,5 +8,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json(await runTargetScan({ limit: Number(process.env.TARGET_SCAN_DAILY_LIMIT) || 10 }));
+  return NextResponse.json(await runTargetScan({ limit: Number(process.env.TARGET_SCAN_DAILY_LIMIT) || 100 }));
 }

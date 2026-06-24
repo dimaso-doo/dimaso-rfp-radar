@@ -47,9 +47,27 @@ model TargetOrganization {
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
   reviewCandidates ReviewCandidate[]
+  pageSnapshots TargetPageSnapshot[]
 
   @@index([active])
   @@index([category])
+}
+
+model TargetPageSnapshot {
+  id             String             @id @default(cuid())
+  targetId       String
+  target         TargetOrganization @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  url            String
+  contentHash    String
+  title          String?
+  lastChangedAt  DateTime           @default(now())
+  lastScannedAt  DateTime           @default(now())
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@unique([targetId, url])
+  @@index([targetId])
+  @@index([lastChangedAt])
 }
 
 model ReviewCandidate {

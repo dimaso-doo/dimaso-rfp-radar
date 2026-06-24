@@ -162,6 +162,35 @@ async function searchBrave(query: string) {
   }));
 }
 
+async function searchGoogle(query: string) {
+  if (!process.env.GOOGLE_CSE_API_KEY || !process.env.GOOGLE_CSE_ID) return [];
+  const results: Array<{ title: string; url: string; snippet: string }> = [];
+  for (const start of [1, 11, 21]) {
+    const url = new URL("https://customsearch.googleapis.com/customsearch/v1");
+    url.searchParams.set("key", process.env.GOOGLE_CSE_API_KEY);
+    url.searchParams.set("cx", process.env.GOOGLE_CSE_ID);
+    url.searchParams.set("q", query);
+    url.searchParams.set("num", "10");
+    url.searchParams.set("start", String(start));
+    const response = await fetch(url);
+    if (response.status === 403 || response.status === 429) {
+      const text = await response.text();
+      console.warn(`Google CSE unavailable (${response.status}): ${text.slice(0, 240)}`);
+      break;
+    }
+    if (!response.ok) break;
+    const payload = await response.json();
+    results.push(...(payload.items ?? []).map((item: { title?: string; link: string; snippet?: string }) => ({
+      title: item.title ?? item.link,
+      url: item.link,
+      snippet: item.snippet ?? "",
+    })));
+    if (!payload.items?.length) break;
+    await sleep(300);
+  }
+  return results;
+}
+
 async function searchTavily(query: string) {
   const key = process.env.TAVILY_API_KEY;
   if (!key) return [];
@@ -267,7 +296,8 @@ async function main() {
   for (const query of searchQueries) {
     if ((await db.targetOrganization.count()) + candidateMap.size >= TARGET_COUNT) break;
     searched += 1;
-    const results = [...await searchBrave(query), ...await searchTavily(query)];
+    const googleResults = await searchGoogle(query);
+    const results = googleResults.length ? googleResults : [...await searchBrave(query), ...await searchTavily(query)];
     rawResults += results.length;
     for (const result of results) {
       const normalized = normalizeUrl(result.url);

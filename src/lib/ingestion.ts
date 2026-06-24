@@ -295,11 +295,12 @@ async function legacyGoogleSearch(query: string): Promise<SearchResult[]> {
 }
 
 export async function searchWeb(query: string, dateRestrict?: string | null) {
+  const googleResults = await legacyGoogleSearch(query);
   const provider = process.env.TAVILY_API_KEY ? tavilySearch : process.env.BRAVE_SEARCH_API_KEY ? braveSearch : null;
-  if (!provider) return legacyGoogleSearch(query);
-  const general = await provider(query, false, dateRestrict);
+  if (!provider) return googleResults;
+  const general = googleResults.length ? googleResults : await provider(query, false, dateRestrict);
   if (/\bfiletype:pdf\b/i.test(query)) return general;
-  const pdfs = await provider(query, true, dateRestrict);
+  const pdfs = googleResults.length ? await legacyGoogleSearch(`${query} filetype:pdf`) : await provider(query, true, dateRestrict);
   return [...new Map([...general, ...pdfs].map((result) => [result.url, result])).values()];
 }
 

@@ -9,7 +9,7 @@ Private opportunity intelligence for finding and scoring realistic web developme
 3. Run `pnpm db:generate && pnpm db:push`.
 4. Start the app with `pnpm dev`.
 
-Demo data is used only when no database is configured. With Supabase connected, the dashboard contains real scanned sources only. Search ingestion requires `BRAVE_SEARCH_API_KEY`. Daily scan and digest routes are configured in `vercel.json` for 08:00 and 08:15 Europe/Belgrade during summer time (Vercel cron uses UTC).
+Demo data is used only when no database is configured. With Supabase connected, the dashboard contains real scanned sources only. Search ingestion can use optional search providers, but the main workflow crawls verified target organization RFP/vendor pages directly. The daily target scan is configured in `vercel.json` for 08:00 Europe/Belgrade during summer time (Vercel cron uses UTC). Daily email digests are disabled.
 
 ## Important routes
 
@@ -18,6 +18,6 @@ Demo data is used only when no database is configured. With Supabase connected, 
 - `/sources` — default query management
 - `/opportunities/new` — public URL intake
 - `/api/cron/target-scan` — direct daily monitoring of verified US target organization RFP/vendor pages
-- `/api/cron/digest` — Resend email digest after the target-site scan
+- `/api/cron/digest` — manual-only Resend email digest endpoint; not scheduled in production
 
 The ingestion helper fetches public HTML only, identifies itself, times out slow requests, discovers linked PDF/DOC/DOCX files, and never attempts to authenticate or bypass paywalls. Production deployments should add application authentication and a fuller robots.txt policy before inviting users.
